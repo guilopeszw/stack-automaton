@@ -1,98 +1,59 @@
-import json
 import sys
-
 from typing import List, Dict, Any, Tuple, Optional
 
-class AutomatoPilha:
+class AutomatoDePilha:
 
-    def __init__(self, json_file: str):
-        # Elementos
-        self.estados = []
-        self.alfabeto_entrada = []
-        self.alfabeto_pilha = []
-        self.estado_inicial = ""
-        self.estados_finais = []
+    def __init__(self, data):
+        self.estados = data["estados"]
+        self.alfabeto_entrada = data["alfabeto_entrada"]
+        self.alfabeto_pilha = data["alfabeto_pilha"]
+        self.estado_inicial = data["estado_inicial"]
+        self.estados_finais = data["estados_finais"]
+        self.transicoes = data["transicoes"]
 
-        # Transições
-        self.transicoes = []
         self.pilha = []
-        self.estado_atual = ""
-        
-        self.carregar_automato(json_file)
-        self.validar_automato()
+        self.estado_atual = self.estado_inicial
     
-    def carregar_automato(self, json_file: str):
-        # aqui o autômato é carregado a partir do arquivo JSON
-        try:
-            with open(json_file, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                
-            self.estados = data.get('estados', [])
-            self.alfabeto_entrada = data.get('alfabeto_entrada', [])
-            self.alfabeto_pilha = data.get('alfabeto_pilha', [])
-            self.estado_inicial = data.get('estado_inicial', '')
-            self.estados_finais = data.get('estados_finais', [])
-            self.transicoes = data.get('transicoes', [])
-            
-        except FileNotFoundError:
-            raise Exception(f"Arquivo {json_file} não foi encontrado. ")
-        
-        except json.JSONDecodeError:
-            raise Exception("Erro ao decodificar o arquivo JSON. ")
-        
-        except Exception as e:
-            raise Exception(f"Erro ao carregar arquivo: {str(e)}. ")
-        
-        # colocamos as exceções para garantir que o autômato foi carregado corretamente
-    
-    def validar_automato(self):
-        # aqui, novamente, validamos o autômato para garantir que está correto e consistente com as definições formais.
+    def validar_estrutura(self):
+        # Validando os atributos do autômato
         if not self.estados:
-            raise Exception("Lista de estados não pode estar vazia.") # verifica se a lista de estados está vazia
-        
-        if not self.alfabeto_entrada:
-            raise Exception("Alfabeto de entrada não pode estar vazio.") # verifica se o alfabeto de entrada está vazio
+            raise Exception("Lista de estados não pode estar vazia.")
         
         if not self.alfabeto_pilha:
-            raise Exception("Alfabeto da pilha não pode estar vazio.") # verifica se o alfabeto da pilha está vazio
+            raise Exception("Alfabeto da pilha não pode estar vazio.")
         
         if not self.estado_inicial:
-            raise Exception("Estado inicial deve ser especificado.") # verifica se o estado inicial está vazio
+            raise Exception("Estado inicial deve ser especificado.")
         
+        # !!! Conferir isso aqui na definição !!!
         if not self.estados_finais:
-            raise Exception("Pelo menos um estado final deve ser especificado.") # verifica se a lista de estados finais está vazia
-        # lembrando que: dentro de qualquer autômato, é obrigatório ter pelo menos um estado inicial, mas não é
-        # obrigatório ter estados finais. Porém, para que o autômato aceite alguma cadeia, é necessário que haja pelo menos um estado final.
-        
+            raise Exception("Pelo menos um estado final deve ser especificado.")
 
         if self.estado_inicial not in self.estados:
-            raise Exception("Estado inicial não está na lista de estados.") # verifica se o estado inicial está na lista de estados
+            raise Exception("Estado inicial não está na lista de estados.") 
         
         for estado in self.estados_finais:
             if estado not in self.estados:
-                raise Exception(f"Estado final '{estado}' não está na lista de estados.") # verifica se os estados finais estão na lista de estados
+                raise Exception(f"Estado final '{estado}' não está na lista de estados.")
         
-        # aqui vamos validar as transições, para garantir que não temos erros nas transições (inviabilizando o funcionamento do AP)
+        # Validando transições
         for i, transicao in enumerate(self.transicoes):
             if not isinstance(transicao, dict):
-                raise Exception(f"Transição {i+1} deve ser um objeto. ") # verifica se a transição é um dicionário
+                raise Exception(f"Transição {i+1} deve ser um objeto. ") 
             
-            campos_obrigatorios = ['estado_origem', 'leitura', 'topo_pilha', 'substituir_topo', 'estado_destino']
-            for campo in campos_obrigatorios:
-                if campo not in transicao:
-                    raise Exception(f"Campo '{campo}' ausente na transição {i+1}. ") # verifica se todos os campos obrigatórios estão presentes
-            
-            # Verificar se estados de origem e destino existem
             if transicao['estado_origem'] not in self.estados:
-                raise Exception(f"Estado origem '{transicao['estado_origem']}' não existe. ") # verifica se o estado de origem está na lista de estados
+                raise Exception(f"Estado origem '{transicao['estado_origem']}' não existe. ")
+            
             if transicao['estado_destino'] not in self.estados:
-                raise Exception(f"Estado destino '{transicao['estado_destino']}' não existe. ") # verifica se o estado de destino está na lista de estados
+                raise Exception(f"Estado destino '{transicao['estado_destino']}' não existe. ")
 
-            # Verificar símbolos do alfabeto (exceto strings vazias)
+            # Verificar símbolos do alfabeto
             if transicao['leitura'] != "" and transicao['leitura'] not in self.alfabeto_entrada:
                 raise Exception(f"Símbolo de leitura '{transicao['leitura']}' não está no alfabeto de entrada.") # verifica se o símbolo de leitura está no alfabeto de entrada
+            
             if transicao['topo_pilha'] != "" and transicao['topo_pilha'] not in self.alfabeto_pilha:
                 raise Exception(f"Símbolo do topo da pilha '{transicao['topo_pilha']}' não está no alfabeto da pilha.") # verifica se o símbolo do topo da pilha está no alfabeto da pilha
+            
             if transicao['substituir_topo'] != "" and transicao['substituir_topo'] not in self.alfabeto_pilha:
                 raise Exception(f"Símbolo de substituição '{transicao['substituir_topo']}' não está no alfabeto da pilha.") # verifica se o símbolo de substituição está no alfabeto da pilha
 
