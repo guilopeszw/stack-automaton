@@ -6,7 +6,7 @@
     "estados_finais": [" q3 "] ,
     "transicoes": [
         {
-        "estado_origem ": " q0 ",
+        "estado_origem": " q0 ",
         "leitura": "" ,
         "topo_pilha": "" ,
         "substituir_topo": "$",
@@ -32,10 +32,10 @@
         "leitura": "b",
         "topo_pilha": " a",
         "substituir_topo": "" ,
-        "estado_destino": " q2 "
+        "estado_destino": "q2"
         },
         {
-        "estado_origem": " q2 ",
+        "estado_origem": "q2",
         "leitura": "" ,
         "topo_pilha": "$",
         "substituir_topo": "$",
