@@ -1,0 +1,6 @@
+TRABALHO: Simulador de autômato de pilha
+
+===== ALUNOS ===== 
+20250148060	- Guilherme Urtiga Lopes Silva
+20250148248 - João Bosco Duarte Filho 
+20250148168 - Samuel Santos Ismael da Costa 
