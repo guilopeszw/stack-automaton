@@ -1,23 +1,19 @@
 import json
 import sys
+
 from typing import List, Dict, Any, Tuple, Optional
 
-'''
-ALUNOS: Guilherme Urtiga Lopes Silva, João Bosco Duarte, Samuel Santos
-Turma: 2025.1, Ciência da Computação, UFPB
-Professores: Bruno Bruck e Andrei Formiga
-
-TRABALHO: Simulador de autômato de pilha
-'''
-
 class AutomatoPilha:
+
     def __init__(self, json_file: str):
-        # aqui, estamos inicializando o AP com os dados do arquivo JSON
+        # Elementos
         self.estados = []
         self.alfabeto_entrada = []
         self.alfabeto_pilha = []
         self.estado_inicial = ""
         self.estados_finais = []
+
+        # Transições
         self.transicoes = []
         self.pilha = []
         self.estado_atual = ""
@@ -40,8 +36,10 @@ class AutomatoPilha:
             
         except FileNotFoundError:
             raise Exception(f"Arquivo {json_file} não foi encontrado. ")
+        
         except json.JSONDecodeError:
             raise Exception("Erro ao decodificar o arquivo JSON. ")
+        
         except Exception as e:
             raise Exception(f"Erro ao carregar arquivo: {str(e)}. ")
         
@@ -51,12 +49,16 @@ class AutomatoPilha:
         # aqui, novamente, validamos o autômato para garantir que está correto e consistente com as definições formais.
         if not self.estados:
             raise Exception("Lista de estados não pode estar vazia.") # verifica se a lista de estados está vazia
+        
         if not self.alfabeto_entrada:
             raise Exception("Alfabeto de entrada não pode estar vazio.") # verifica se o alfabeto de entrada está vazio
+        
         if not self.alfabeto_pilha:
             raise Exception("Alfabeto da pilha não pode estar vazio.") # verifica se o alfabeto da pilha está vazio
+        
         if not self.estado_inicial:
             raise Exception("Estado inicial deve ser especificado.") # verifica se o estado inicial está vazio
+        
         if not self.estados_finais:
             raise Exception("Pelo menos um estado final deve ser especificado.") # verifica se a lista de estados finais está vazia
         # lembrando que: dentro de qualquer autômato, é obrigatório ter pelo menos um estado inicial, mas não é
