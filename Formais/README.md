@@ -1,36 +1,97 @@
-# Estrutura do Código
-* O código está centrado na classe AutomatoPilha, que encapsula toda a lógica do autômato e simulação, e na função main, que lida com a interface e execução.
+# Simulador de Autômato de Pilha
 
-* Dependências: O código utiliza as bibliotecas padrão json (para leitura do arquivo de descrição do AP) e sys (para manipulação de argumentos de linha de comando).
+Projeto da disciplina **Linguagens Formais e Computabilidade** do curso de **Ciência da Computação (UFPB)**.
+
+Este projeto tem como objetivo simular o processamento de **Autômatos de Pilha (APs)** a partir da leitura de suas descrições formais (em JSON) e a validação de cadeias de entrada.
+
+## Sumário:
+1. [Requisitos e execução](#requisitos-e-execução)
+2. [Estrutura do projeto](#estrutura-do-projeto)
+3. [Formato de Entrada](#requisito-e-formato-de-entrada)
+4. Funcionamento e execução do simulador
+5. Explorando o código fonte
+    
+    5.1. Processamento de entrada (`leitor_json`)
+    
+    5.2. Simulação do automato (`automato_de_pilha`)
+    
+    5.3 Execução (`main`)
+
+## Requisitos e execução
+Antes de tudo, o único pré-requisito necessário para roda o projeto é a presença do python 3 instalado. Todos os módulo usados durante o projeto são módulos base da linguagem.
+
+### Execução
+1. Clone o repositório:
+```git
+git clone git@github.com:guilopeszw/Trabalhos.git
+```
+
+2. Vá até o repositório clonado, identifique a pasta geral do projeto e execute o main.py no caminho mãe de todo o projeto.
+```bash
+cd Formais
+python3 src/main.py
+```
+
+## Estrutura do projeto
+O projeto segue o paradigma de **Programação Orientada a Objetos** utilizando **Python**, com a seguinte estrutura:
+
+```txt
+\data
+\src
+    automato_de_pilha.py
+    leitor_json.py
+    main.py
+alunos.txt
+README.md
+```
+- `/data`: Contém os arquivos .json com a descrição dos autômatos.
+- `/src`: Código-fonte principal do projeto.
+- `alunos.txt`: Alunos do projeto.
+- `README.md`: Documentação.
 
 
-# Formato de Entrada (Arquivo JSON)
-O simulador é projetado para ler a descrição formal do Autômato de Pilha a partir de um arquivo .json. A utilização do formato especificado abaixo é obrigatória. Os campos obrigatórios, lidos pelo método carregar_automato, são:
-* Campo JSON
-* Descrição
-* Estados
-* Lista com todos os estados do autômato (ex: ["q0", "q1"]).
-* Alfabeto de entrada
-* Lista de símbolos possíveis na fita de entrada.
-* Alfabeto da pilha
-* Lista de símbolos possíveis na pilha (ex: ["a", "$"]).
-* Estado inicial
-* O estado de partida do autômato (string).
-* Estados finais
-* Lista de estados de aceitação.
-* Transições
-* Lista de transições, onde cada transição é um objeto (dicionário).
-* Estrutura de uma Transição (dentro da lista transicoes):
+# Requisitos e Formato de Entrada
+O simulador lê a descrição do AP a partir de um arquivo JSON estruturado. Exemplo do arquivo JSON estruturado:
 
-#### Cada transição deve conter os seguintes campos:
+```json
+{
+  "estados": ["q0", "q1", "q2"],
+  "alfabeto_entrada": ["a", "b"],
+  "alfabeto_pilha": ["Z", "A"],
+  "estado_inicial": "q0",
+  "estados_finais": ["q2"],
+  "transicoes": [
+    {
+      "estado_origem": "q0",
+      "leitura": "a",
+      "topo_pilha": "Z",
+      "substituir_topo": "AZ",
+      "estado_destino": "q1"
+    }
+    // Outras transições...
+  ]
+}
+```
 
-- estado_origem: estado atual.
-- leitura: símbolo lido da fita de entrada, ou "" para transições vazias (épsilon).
-- topo_pilha: símbolo que deve estar no topo da pilha, ou "" (épsilon).
-- substituir_topo: símbolo que substitui o topo (o novo símbolo a ser empilhado), ou "".
-- estado_destino: estado para o qual o autômato se move.
+Campos obrigatórios:
+- `estados`: Lista de todos os estados.
+- `alfabeto_entrada`: Símbolos válidos na fita de entrada.
+- `alfabeto_pilha`: Símbolos válidos para a pilha.
+- `estado_inicial`: Estado de partida.
+- `estados_finais`: Lista de estados de aceitação.
+- `transicoes`: Lista de transições válidas.
 
---------------------------------------------------------------------------------
+Estrutura de cada transição:
+- `estado_origem`: Estado atual.
+- `leitura`: Símbolo da fita de entrada (ou `""` para transição épsilon).
+- `topo_pilha`: Símbolo esperado no topo da pilha (ou `""`).
+- `substituir_topo`: Símbolo(s) a empilhar (ou `""`).
+- `estado_destino`: Próximo estado.
+
+
+
+
+
 # Funcionamento Detalhado da Classe 
 A classe AutomatoPilha é o núcleo do simulador.
 Função: Construtor da classe. Operação:
