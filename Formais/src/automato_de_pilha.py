@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Tuple, Optional
 
 class AutomatoDePilha:
 
-    def __init__(self, data):
+    def __init__(self, data) -> None:
         self.estados = data["estados"]
         self.alfabeto_entrada = data["alfabeto_entrada"]
         self.alfabeto_pilha = data["alfabeto_pilha"]
@@ -14,7 +14,7 @@ class AutomatoDePilha:
         self.pilha = []
         self.estado_atual = self.estado_inicial
     
-    def validar_estrutura(self):
+    def validar_estrutura(self) -> None:
         # Validando os atributos do autômato
         if not self.estados:
             raise Exception("Lista de estados não pode estar vazia.")
@@ -62,15 +62,14 @@ class AutomatoDePilha:
         transicoes_validas = []
         
         for transicao in self.transicoes:
-            if (transicao['estado_origem'] == estado and
-                (transicao['leitura'] == simbolo_entrada or transicao['leitura'] == "") and
+            if (transicao['estado_origem'] == estado and 
+                (transicao['leitura'] == simbolo_entrada or transicao['leitura'] == "") and 
                 (transicao['topo_pilha'] == topo_pilha or transicao['topo_pilha'] == "")):
                 transicoes_validas.append(transicao)
         
         return transicoes_validas
     
     def executar_transicao(self, transicao: Dict, simbolo_lido: bool):
-        """Executa uma transição específica."""
         # aqui, atualizamos o estado atual e a pilha conforme a transição escolhida
         if transicao['topo_pilha'] != "":
             if self.pilha and self.pilha[-1] == transicao['topo_pilha']:
@@ -85,7 +84,6 @@ class AutomatoDePilha:
         return simbolo_lido or transicao['leitura'] != ""
     
     def simular(self, entrada: str) -> bool:
-        # simulamos o autômato de pilha com a entrada fornecida
         self.estado_atual = self.estado_inicial
         self.pilha = []
         posicao = 0
@@ -106,10 +104,9 @@ class AutomatoDePilha:
             if not transicoes_validas:
                 # Verificar se é estado final e entrada foi consumida
                 if self.estado_atual in self.estados_finais and posicao >= len(entrada):
-                    print("ACEITA: Estado final atingido e entrada consumida. ")
                     return True
+                
                 else:
-                    print("REJEITA: Nenhuma transição válida encontrada. ")
                     return False
             
             # Para simplicidade, usar primeira transição válida (pode ser expandido para não-determinismo)
@@ -130,32 +127,3 @@ class AutomatoDePilha:
             if posicao > len(entrada) + 100:
                 print("REJEITA: Possível loop infinito detectado.")
                 return False
-
-def main():
-    if len(sys.argv) == 1:
-        # se nenhum argumento foi fornecido:
-        arquivo_json = input("Digite o caminho do arquivo JSON: ")
-        entrada = input("Digite a entrada para simular: ")
-    elif len(sys.argv) == 2:
-        # se apenas o arquivo JSON foi fornecido
-        arquivo_json = sys.argv[1]
-        entrada = input("Digite a entrada para simular: ")
-    elif len(sys.argv) == 3:
-        # se ambos foram fornecidos
-        arquivo_json = sys.argv[1]
-        entrada = sys.argv[2]
-    else:
-        print("Uso: python automato_de_pilha.py [arquivo_json] [entrada]")
-        print("Ou execute sem parâmetros para entrada interativa")
-        return
-    
-    try:
-        automato = AutomatoPilha(arquivo_json)
-        resultado = automato.simular(entrada)
-        print(f"\nResultado final: {'ACEITA' if resultado else 'REJEITA'}")
-        
-    except Exception as e:
-        print(f"Erro: {str(e)}")
-
-if __name__ == "__main__":
-    main()
