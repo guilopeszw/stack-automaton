@@ -61,12 +61,7 @@ def processa_cadeia(automato: AutomatoDePilha) -> None:
     cadeia = input("Insira a cadeia que deseja processar: ")
 
     try:
-        resultado = automato.simular(cadeia)
-        if resultado:
-            print("Resultado: Cadeia ACEITA pelo autômato.\n")
-        
-        else:
-            print("Resultado: Cadeia REJEITADA pelo autômato.\n")
+        resultado = automato.simular_nao_deterministico(cadeia)
     
     except Exception as e:
         print(f"Erro ao processar cadeia: {e}\n")

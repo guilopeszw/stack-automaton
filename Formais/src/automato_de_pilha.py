@@ -1,5 +1,6 @@
-import sys
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict
+from collections import deque
+from copy import deepcopy
 
 class AutomatoDePilha:
 
@@ -25,7 +26,6 @@ class AutomatoDePilha:
         if not self.estado_inicial:
             raise Exception("Estado inicial deve ser especificado.")
         
-        # !!! Conferir isso aqui na definição !!!
         if not self.estados_finais:
             raise Exception("Pelo menos um estado final deve ser especificado.")
 
@@ -56,6 +56,7 @@ class AutomatoDePilha:
             
             if transicao['substituir_topo'] != "" and transicao['substituir_topo'] not in self.alfabeto_pilha:
                 raise Exception(f"Símbolo de substituição '{transicao['substituir_topo']}' não está no alfabeto da pilha.") # verifica se o símbolo de substituição está no alfabeto da pilha
+            
 
     def buscar_transicoes(self, estado: str, simbolo_entrada: str, topo_pilha: str) -> List[Dict]:
         # aqui, buscamos as transições válidas a partir do estado atual, símbolo de entrada e topo da pilha
@@ -69,61 +70,113 @@ class AutomatoDePilha:
         
         return transicoes_validas
     
-    def executar_transicao(self, transicao: Dict, simbolo_lido: bool):
-        # aqui, atualizamos o estado atual e a pilha conforme a transição escolhida
-        if transicao['topo_pilha'] != "":
-            if self.pilha and self.pilha[-1] == transicao['topo_pilha']:
-                self.pilha.pop()
+    # def executar_transicao(self, transicao: Dict, simbolo_lido: bool):
+    #     # aqui, atualizamos o estado atual e a pilha conforme a transição escolhida
+    #     if transicao['topo_pilha'] != "":
+    #         if self.pilha and self.pilha[-1] == transicao['topo_pilha']:
+    #             self.pilha.pop()
         
-        if transicao['substituir_topo'] != "":
-            self.pilha.append(transicao['substituir_topo'])
+    #     if transicao['substituir_topo'] != "":
+    #         self.pilha.append(transicao['substituir_topo'])
         
-        # aqui, atualizamos o estado atual do autômato
-        self.estado_atual = transicao['estado_destino']
+    #     # aqui, atualizamos o estado atual do autômato
+    #     self.estado_atual = transicao['estado_destino']
         
-        return simbolo_lido or transicao['leitura'] != ""
+    #     return simbolo_lido or transicao['leitura'] != ""
     
-    def simular(self, entrada: str) -> bool:
-        self.estado_atual = self.estado_inicial
-        self.pilha = []
-        posicao = 0
+    # def simular(self, entrada: str) -> bool:
+    #     self.estado_atual = self.estado_inicial
+    #     self.pilha = []
+    #     posicao = 0
         
-        print(f"Simulando entrada: '{entrada}' ")
-        print(f"Estado inicial: {self.estado_atual} ")
-        print(f"Pilha inicial: {self.pilha} ")
-        print(" ")
+    #     print(f"Simulando entrada: '{entrada}' ")
+    #     print(f"Estado inicial: {self.estado_atual} ")
+    #     print(f"Pilha inicial: {self.pilha} ")
+    #     print(" ")
         
-        while True:
-            simbolo_atual = entrada[posicao] if posicao < len(entrada) else ""
-            topo_pilha = self.pilha[-1] if self.pilha else ""
+    #     while True:
+    #         simbolo_atual = entrada[posicao] if posicao < len(entrada) else ""
+    #         topo_pilha = self.pilha[-1] if self.pilha else ""
             
-            print(f"Posição: {posicao}, Símbolo: '{simbolo_atual}', Estado: {self.estado_atual}, Pilha: {self.pilha} ")
+    #         print(f"Posição: {posicao}, Símbolo: '{simbolo_atual}', Estado: {self.estado_atual}, Pilha: {self.pilha} ")
             
-            transicoes_validas = self.buscar_transicoes(self.estado_atual, simbolo_atual, topo_pilha)
+    #         transicoes_validas = self.buscar_transicoes(self.estado_atual, simbolo_atual, topo_pilha)
             
-            if not transicoes_validas:
-                # Verificar se é estado final e entrada foi consumida
-                if self.estado_atual in self.estados_finais and posicao >= len(entrada):
-                    return True
+    #         if not transicoes_validas:
+    #             # Verificar se é estado final e entrada foi consumida
+    #             if self.estado_atual in self.estados_finais and posicao >= len(entrada):
+    #                 return True
                 
+    #             else:
+    #                 return False
+            
+    #         # Para simplicidade, usar primeira transição válida (pode ser expandido para não-determinismo)
+    #         transicao = transicoes_validas[0]
+    #         print(f"Transição: {transicao}")
+            
+    #         simbolo_consumido = self.executar_transicao(transicao, transicao['leitura'] != "")
+            
+    #         if simbolo_consumido:
+    #             posicao += 1
+            
+    #         # Verificar se entrada foi totalmente consumida e estamos em estado final
+    #         if posicao >= len(entrada) and self.estado_atual in self.estados_finais:
+    #             print("ACEITA: Estado final atingido e entrada consumida.")
+    #             return True
+            
+    #         # Evitar loop infinito
+    #         if posicao > len(entrada) + 100:
+    #             print("REJEITA: Possível loop infinito detectado.")
+    #             return False
+            
+    def simular_nao_deterministico(self, entrada: str):
+        # Fila para BFS
+        fila = deque()
+
+        # Cada item da fila: (estado_atual, posicao, pilha, caminho)
+        fila.append((self.estado_inicial, 0, [], []))
+
+        resultados = []
+
+        while fila:
+            estado, posicao, pilha, caminho = fila.popleft()
+
+            simbolo_atual = entrada[posicao] if posicao < len(entrada) else ""
+            topo_pilha = pilha[-1] if pilha else ""
+
+            transicoes_validas = self.buscar_transicoes(estado, simbolo_atual, topo_pilha)
+
+            # Nenhuma transição válida → verificar aceitação
+            if not transicoes_validas:
+                if estado in self.estados_finais and posicao >= len(entrada):
+                    resultados.append((caminho, "ACEITA"))
                 else:
-                    return False
-            
-            # Para simplicidade, usar primeira transição válida (pode ser expandido para não-determinismo)
-            transicao = transicoes_validas[0]
-            print(f"Transição: {transicao}")
-            
-            simbolo_consumido = self.executar_transicao(transicao, transicao['leitura'] != "")
-            
-            if simbolo_consumido:
-                posicao += 1
-            
-            # Verificar se entrada foi totalmente consumida e estamos em estado final
-            if posicao >= len(entrada) and self.estado_atual in self.estados_finais:
-                print("ACEITA: Estado final atingido e entrada consumida.")
-                return True
-            
-            # Evitar loop infinito
-            if posicao > len(entrada) + 100:
-                print("REJEITA: Possível loop infinito detectado.")
-                return False
+                    resultados.append((caminho, "REJEITA"))
+                continue
+
+            # Expandir cada transição válida
+            for transicao in transicoes_validas:
+                novo_estado = transicao["estado_destino"]
+                nova_pilha = deepcopy(pilha)
+
+                # Atualiza pilha
+                if transicao["topo_pilha"]:
+                    nova_pilha.pop()
+                if transicao["substituir_topo"]:
+                    for s in reversed(transicao["substituir_topo"]):
+                        nova_pilha.append(s)
+
+                nova_posicao = posicao + (1 if transicao["leitura"] else 0)
+                novo_caminho = caminho + [(
+                    posicao, simbolo_atual, estado, list(pilha), transicao
+                )]
+
+                fila.append((novo_estado, nova_posicao, nova_pilha, novo_caminho))
+
+        # Mostrar resultados
+        for caminho, resultado in resultados:
+            print("\n=== Novo processamento ===")
+            for passo in caminho:
+                pos, simbolo, estado, pilha_antiga, trans = passo
+                print(f"Posição={pos}, Símbolo='{simbolo}', Estado={estado}, Pilha={pilha_antiga}, Transição={trans}")
+            print("Resultado:", resultado)
