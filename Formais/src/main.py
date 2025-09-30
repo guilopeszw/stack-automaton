@@ -10,10 +10,14 @@ def main():
 
     automato = None # Armazena a instância do autômato
 
+    # Fluxo de execução
     while True:
         print(menu)
         escolha = input(">: ")
 
+        # 0 -> Fecha
+        # 1 -> Importa JSON
+        # 2 -> Processa cadeia
         match escolha:
             case "0":
                 print("Fim de execução.")
@@ -34,7 +38,8 @@ def main():
 
             case _:
                 print("Opção inválida! Tente novamente.\n")
-    
+
+# Método de chamada da importação do autômato
 def importa_automato() -> Optional[AutomatoDePilha]:
 
     while True:
@@ -58,6 +63,7 @@ def importa_automato() -> Optional[AutomatoDePilha]:
         except Exception as e:
             print(f"Erro ao importar / validar autômato: {e}\n")
 
+# Método de chamada do processaamento da cadeia 
 def processa_cadeia(automato: AutomatoDePilha) -> None:
 
     while True:
