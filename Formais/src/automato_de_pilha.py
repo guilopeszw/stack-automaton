@@ -4,7 +4,9 @@ from copy import deepcopy
 
 class AutomatoDePilha:
 
+    # Construtor (Recebe as própriedades da instância da classe leitor_json)
     def __init__(self, data) -> None:
+
         self.estados = data["estados"]
         self.alfabeto_entrada = data["alfabeto_entrada"]
         self.alfabeto_pilha = data["alfabeto_pilha"]
@@ -15,8 +17,9 @@ class AutomatoDePilha:
         self.pilha = []
         self.estado_atual = self.estado_inicial
     
+    # Valida os atributos do autômato
     def validar_estrutura(self) -> None:
-        # Validando os atributos do autômato
+        
         if not self.estados:
             raise Exception("Lista de estados não pode estar vazia.")
         
@@ -73,9 +76,10 @@ class AutomatoDePilha:
         # Fila para BFS
         fila = deque()
 
-        # Cada item da fila: (estado_atual, posicao, pilha, caminho)
-        fila.append((self.estado_inicial, 0, [], []))
+        # Elemento da fila composto por: (estado_atual, posicao, pilha, caminho)
+        fila.append((self.estado_inicial, 0, [], [])) # Inicialmente 0
 
+        # Lista de processamentos
         resultados = []
 
         while fila:
@@ -90,8 +94,10 @@ class AutomatoDePilha:
             if not transicoes_validas:
                 if estado in self.estados_finais and posicao >= len(entrada):
                     resultados.append((caminho, "ACEITA"))
+
                 else:
                     resultados.append((caminho, "REJEITA"))
+
                 continue
 
             # Expandir cada transição válida
@@ -101,7 +107,12 @@ class AutomatoDePilha:
 
                 # Atualiza pilha
                 if transicao["topo_pilha"]:
-                    nova_pilha.pop()
+                    if nova_pilha and nova_pilha[-1] == transicao["topo_pilha"]:
+                        nova_pilha.pop()
+
+                    else:
+                        continue  # transição inválida nesse caso
+
                 if transicao["substituir_topo"]:
                     for s in reversed(transicao["substituir_topo"]):
                         nova_pilha.append(s)
@@ -116,7 +127,10 @@ class AutomatoDePilha:
         # Mostrar resultados
         for caminho, resultado in resultados:
             print("\n=== Novo processamento ===")
+
             for passo in caminho:
                 pos, simbolo, estado, pilha_antiga, trans = passo
                 print(f"Posição={pos}, Símbolo='{simbolo}', Estado={estado}, Pilha={pilha_antiga}, Transição={trans}")
+
             print("Resultado:", resultado)
+            print()
