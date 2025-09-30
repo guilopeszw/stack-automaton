@@ -1,0 +1,13 @@
+ap.json: L = {aⁿ bⁿ | n ≥ 0 }
+
+ap2.json: L = {aⁿ bⁿ | n ≥ 0 } (sem transição vazia)
+
+dataap3.json: L = { aⁿ bⁿ cⁿ | n ≥ 0 }
+
+dataap4.json: palíndromo
+
+dataap5.json: L = { aⁿ bᵐ | n,m ≥ 0 }
+
+dataap6.json: L = { (ab)ⁿ | n ≥ 0 }
+
+dataap7.json: L = { aⁿ bᵐ | n = m ou n = 2m }
