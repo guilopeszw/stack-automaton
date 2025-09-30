@@ -13,6 +13,7 @@ class LeitorJson:
             "transicoes"
         ]
 
+    # Função para a validação das propriedades (verificar se todos os atributos estão no JSON)
     def valida_propriedades(self, arquivo: Dict[str, Any]) -> None:
         for propriedade in self.propriedades:
             if propriedade not in arquivo:
@@ -48,6 +49,7 @@ class LeitorJson:
             dados["transicoes"] = transicoes_processadas
             return dados
         
+        # Exceções
         except FileNotFoundError:
             raise Exception(f"Arquivo '{caminho}' não foi encontrado.")
         
