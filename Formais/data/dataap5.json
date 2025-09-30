@@ -1,0 +1,44 @@
+{
+    "estados": ["q0", "q1", "qf"] ,
+    "alfabeto_entrada": ["a", "b"] ,
+    "alfabeto_pilha": ["$", "a"] ,
+    "estado_inicial": "q0" ,
+    "estados_finais": ["qf"] ,
+    "transicoes": [
+        {
+        "estado_origem": "q0",
+        "leitura": "" ,
+        "topo_pilha": "" ,
+        "substituir_topo": "$",
+        "estado_destino": "q0"
+        },
+        {
+        "estado_origem": "q0",
+        "leitura": "a",
+        "topo_pilha": "" ,
+        "substituir_topo": "a",
+        "estado_destino": "q0"
+        },
+        {
+        "estado_origem": "q0",
+        "leitura": "b",
+        "topo_pilha": "" ,
+        "substituir_topo": "" ,
+        "estado_destino": "q1"
+        },
+        {
+        "estado_origem": "q1",
+        "leitura": "b",
+        "topo_pilha": "" ,
+        "substituir_topo": "" ,
+        "estado_destino": "q1"
+        },
+        {
+        "estado_origem": "q1",
+        "leitura": "" ,
+        "topo_pilha": "$",
+        "substituir_topo": "$",
+        "estado_destino": "qf"
+        }
+    ]
+}

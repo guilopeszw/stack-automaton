@@ -1,0 +1,58 @@
+{
+    "estados": ["q0", "q1", "q2", "q3", "qf"] ,
+    "alfabeto_entrada": ["a", "b", "c"] ,
+    "alfabeto_pilha": ["a", "$"] ,
+    "estado_inicial": "q0" ,
+    "estados_finais": ["qf"] ,
+    "transicoes": [
+        {
+        "estado_origem": "q0",
+        "leitura": "" ,
+        "topo_pilha": "" ,
+        "substituir_topo": "$",
+        "estado_destino": "q1"
+        },
+        {
+        "estado_origem": "q1",
+        "leitura": "a",
+        "topo_pilha": "" ,
+        "substituir_topo": "a",
+        "estado_destino": "q1"
+        },
+        {
+        "estado_origem": "q1",
+        "leitura": "" ,
+        "topo_pilha": "" ,
+        "substituir_topo": "" ,
+        "estado_destino": "q2"
+        },
+        {
+        "estado_origem": "q2",
+        "leitura": "b",
+        "topo_pilha": "a",
+        "substituir_topo": "" ,
+        "estado_destino": "q2"
+        },
+        {
+        "estado_origem": "q2",
+        "leitura": "" ,
+        "topo_pilha": "$",
+        "substituir_topo": "$",
+        "estado_destino": "q3"
+        },
+        {
+        "estado_origem": "q3",
+        "leitura": "c",
+        "topo_pilha": "$",
+        "substituir_topo": "$",
+        "estado_destino": "q3"
+        },
+        {
+        "estado_origem": "q3",
+        "leitura": "" ,
+        "topo_pilha": "$",
+        "substituir_topo": "$",
+        "estado_destino": "qf"
+        }
+    ]
+}
