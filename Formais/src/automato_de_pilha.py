@@ -59,12 +59,17 @@ class AutomatoDePilha:
             
             if transicao['substituir_topo'] != "" and transicao['substituir_topo'] not in self.alfabeto_pilha:
                 raise Exception(f"Símbolo de substituição '{transicao['substituir_topo']}' não está no alfabeto da pilha.") # verifica se o símbolo de substituição está no alfabeto da pilha
-            
+    
+
+    # busca as transições possíveis a partir do estado atual
     def buscar_transicoes(self, estado: str, simbolo_entrada: str, topo_pilha: str) -> List[Dict]:
         # aqui, buscamos as transições válidas a partir do estado atual, símbolo de entrada e topo da pilha
         transicoes_validas = []
         
         for transicao in self.transicoes:
+            # Verifica se está no mesmo estado da transição
+            # É transição vazia ou o simbolo da entrada é o mesmo da leitura
+            # Topo da pilha é vazia ou o simbolo esperado conincide com o simbolo esperado na transição
             if (transicao['estado_origem'] == estado and 
                 (transicao['leitura'] == simbolo_entrada or transicao['leitura'] == "") and 
                 (transicao['topo_pilha'] == topo_pilha or transicao['topo_pilha'] == "")):
@@ -72,26 +77,34 @@ class AutomatoDePilha:
         
         return transicoes_validas
             
-    def simular_nao_deterministico(self, entrada: str):
+    def simular_nao_deterministico(self, entrada: str, limite_passos: int = 500):
         # Fila para BFS
         fila = deque()
 
-        # Elemento da fila composto por: (estado_atual, posicao, pilha, caminho)
-        fila.append((self.estado_inicial, 0, [], [])) # Inicialmente 0
+        # Elemento da fila composto por ->(estado_atual, posicao, pilha, caminho, passos)
+        fila.append((self.estado_inicial, 0, [], [], 0))
 
         # Lista de processamentos
         resultados = []
 
         while fila:
-            estado, posicao, pilha, caminho = fila.popleft()
+            # Desenfileira um nó
+            estado, posicao, pilha, caminho, passos = fila.popleft()
+
+            # Verificação do limite
+            if passos >= limite_passos:
+                resultados.append((caminho, "LIMITE ATINGIDO"))
+                continue
 
             simbolo_atual = entrada[posicao] if posicao < len(entrada) else ""
             topo_pilha = pilha[-1] if pilha else ""
 
+            # Busca as transicoes validas 
             transicoes_validas = self.buscar_transicoes(estado, simbolo_atual, topo_pilha)
 
-            # Nenhuma transição válida → verificar aceitação
+            # Verifica a aceitação
             if not transicoes_validas:
+                # Aceita somente se estiver em estado_final e toda a entrada foi consumida
                 if estado in self.estados_finais and posicao >= len(entrada):
                     resultados.append((caminho, "ACEITA"))
 
@@ -103,26 +116,27 @@ class AutomatoDePilha:
             # Expandir cada transição válida
             for transicao in transicoes_validas:
                 novo_estado = transicao["estado_destino"]
-                nova_pilha = deepcopy(pilha)
+                nova_pilha = deepcopy(pilha) # pilhas independentes para os caminhos
 
                 # Atualiza pilha
                 if transicao["topo_pilha"]:
+
+                    # Se a transição exige um símbolo específico no topo, verifica se remove ele
                     if nova_pilha and nova_pilha[-1] == transicao["topo_pilha"]:
                         nova_pilha.pop()
 
                     else:
-                        continue  # transição inválida nesse caso
+                        continue
 
                 if transicao["substituir_topo"]:
                     for s in reversed(transicao["substituir_topo"]):
                         nova_pilha.append(s)
 
+                # Se a transição consome símbolo (leitura != ""), avança posicao em 1; caso contrário (episilon), não avança.
                 nova_posicao = posicao + (1 if transicao["leitura"] else 0)
-                novo_caminho = caminho + [(
-                    posicao, simbolo_atual, estado, list(pilha), transicao
-                )]
+                novo_caminho = caminho + [(posicao, simbolo_atual, estado, list(pilha), transicao)]
 
-                fila.append((novo_estado, nova_posicao, nova_pilha, novo_caminho))
+                fila.append((novo_estado, nova_posicao, nova_pilha, novo_caminho, passos + 1))
 
         # Mostrar resultados
         for caminho, resultado in resultados:
